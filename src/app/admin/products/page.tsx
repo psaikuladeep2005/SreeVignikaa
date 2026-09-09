@@ -119,7 +119,6 @@ export default function AdminProductsPage() {
     try {
       const url = await uploadProductImageFile(file);
       const newImg: Partial<ProductImage> = {
-        id: `img-${Date.now()}`,
         image_url: url,
         is_primary: imagesList.length === 0,
         sort_order: imagesList.length + 1,
@@ -135,7 +134,6 @@ export default function AdminProductsPage() {
   const handleAddImageUrl = () => {
     if (!newImageUrl.trim()) return;
     const newImg: Partial<ProductImage> = {
-      id: `img-${Date.now()}`,
       image_url: newImageUrl.trim(),
       is_primary: imagesList.length === 0,
       sort_order: imagesList.length + 1,
@@ -171,10 +169,18 @@ export default function AdminProductsPage() {
         ? editingProduct.slug
         : slugify(editingProduct.name);
 
-    await saveProduct({ ...editingProduct, slug }, imagesList);
-    await loadCatalog();
-    setSaving(false);
-    setModalOpen(false);
+    try {
+      await saveProduct({ ...editingProduct, slug }, imagesList);
+      await loadCatalog();
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Error saving product:", error);
+      window.alert(
+        error instanceof Error ? error.message : "Failed to save product. Please try again."
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleConfirmDelete = async () => {
