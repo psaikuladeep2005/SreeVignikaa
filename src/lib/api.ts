@@ -12,6 +12,22 @@ import {
 } from "./demo-data";
 import { supabase, isSupabaseConfigured } from "./supabase";
 
+/**
+ * PostgreSQL/Supabase UUID validation.
+ * Any legacy/demo IDs such as "img-123" or "i-123-0" are not valid UUIDs.
+ */
+function isValidUUID(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+  );
+}
+
+function generateUUID(): string {
+  return crypto.randomUUID();
+}
+
+
 // LocalStorage Keys for persistent demo/fallback mode
 const STORAGE_KEYS = {
   PRODUCTS: "sreevignikaa_products_v1",
@@ -252,7 +268,7 @@ export async function saveProduct(
   imagesData: Partial<ProductImage>[] = []
 ): Promise<ProductWithImages> {
   const isNew = !productData.id;
-  const id = productData.id;
+  const id = isValidUUID(productData.id) ? productData.id : undefined;
   const now = new Date().toISOString();
 
   const newProduct: ProductWithImages = {
@@ -273,8 +289,8 @@ export async function saveProduct(
     created_at: productData.created_at || now,
     updated_at: now,
     images: imagesData.map((img, idx) => ({
-      ...(img.id ? { id: img.id } : {}),
-      ...(id ? { product_id: id } : {}),
+      id: isValidUUID(img.id) ? img.id : generateUUID(),
+      product_id: id || "",
       image_url: img.image_url || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=1000",
       is_primary: idx === 0 ? true : Boolean(img.is_primary),
       sort_order: idx + 1,
@@ -340,7 +356,7 @@ export async function saveProduct(
       // Existing UUIDs are preserved when editing.
       const toInsert = newProduct.images.map((img) => ({
         // Existing images already have valid UUIDs; new images need a real UUID.
-        id: img.id || crypto.randomUUID(),
+        id: isValidUUID(img.id) ? img.id : generateUUID(),
         product_id: productId,
         image_url: img.image_url,
         is_primary: img.is_primary,
