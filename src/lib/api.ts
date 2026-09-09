@@ -268,11 +268,11 @@ export async function saveProduct(
   imagesData: Partial<ProductImage>[] = []
 ): Promise<ProductWithImages> {
   const isNew = !productData.id;
-  const id = isValidUUID(productData.id) ? productData.id : undefined;
+  const id = isValidUUID(productData.id) ? productData.id : generateUUID();
   const now = new Date().toISOString();
 
   const newProduct: ProductWithImages = {
-    ...(id ? { id } : {}),
+    id,
     product_code: productData.product_code || `BL-${Date.now().toString().slice(-4)}`,
     name: productData.name || "Ethnic Wear Product",
     slug: productData.slug || `creation-${Date.now()}`,
@@ -290,7 +290,7 @@ export async function saveProduct(
     updated_at: now,
     images: imagesData.map((img, idx) => ({
       id: isValidUUID(img.id) ? img.id : generateUUID(),
-      product_id: id || "",
+      product_id: id,
       image_url: img.image_url || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=1000",
       is_primary: idx === 0 ? true : Boolean(img.is_primary),
       sort_order: idx + 1,
