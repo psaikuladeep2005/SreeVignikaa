@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { MessageCircle, Sparkles } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductWithImages, BoutiqueSettings } from "@/lib/types";
 import { getBoutiqueSettings } from "@/lib/api";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
-import { CustomizationModal } from "./customization-modal";
 
 interface WhatsAppButtonProps {
   product: ProductWithImages;
@@ -14,7 +13,6 @@ interface WhatsAppButtonProps {
   size?: "default" | "sm" | "lg" | "icon";
   variant?: "default" | "outline" | "whatsapp" | "gold";
   label?: string;
-  showCustomizationModal?: boolean;
 }
 
 export function WhatsAppButton({
@@ -23,50 +21,50 @@ export function WhatsAppButton({
   size = "default",
   variant = "whatsapp",
   label = "WhatsApp Inquire",
-  showCustomizationModal = true,
 }: WhatsAppButtonProps) {
   const [settings, setSettings] = useState<BoutiqueSettings | null>(null);
 
   useEffect(() => {
-    getBoutiqueSettings().then((data) => setSettings(data));
+    let mounted = true;
+
+    getBoutiqueSettings()
+      .then((data) => {
+        if (mounted) {
+          setSettings(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load boutique settings:", error);
+      });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const handleDirectClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (!settings) return;
+
+    if (!settings) {
+      console.warn("Boutique settings are still loading.");
+      return;
+    }
+
     const link = generateWhatsAppLink(product, settings);
+
     window.open(link, "_blank", "noopener,noreferrer");
   };
-
-  if (showCustomizationModal && settings) {
-    return (
-      <CustomizationModal
-        product={product}
-        settings={settings}
-        triggerButton={
-          <Button
-            variant={variant}
-            size={size}
-            onClick={(e) => e.stopPropagation()}
-            className={`gap-2 font-semibold shadow-md ${className}`}
-          >
-            <MessageCircle className="w-4 h-4 fill-white shrink-0" />
-            <span>{label}</span>
-          </Button>
-        }
-      />
-    );
-  }
 
   return (
     <Button
       variant={variant}
       size={size}
-      onClick={handleDirectClick}
+      onClick={handleClick}
+      disabled={!settings}
       className={`gap-2 font-semibold shadow-md ${className}`}
     >
       <MessageCircle className="w-4 h-4 fill-white shrink-0" />
-      <span>{label}</span>
+      <span>{settings ? label : "Loading WhatsApp..."}</span>
     </Button>
   );
 }
