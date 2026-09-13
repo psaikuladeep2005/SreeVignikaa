@@ -135,7 +135,7 @@ export function HeroBanner() {
               {/* Main Large Saree Card */}
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border-2 border-gold-400/40 bg-white shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=1000"
+                  src="/images/hero-banner.png"
                   alt="Royal Kanchipuram Temple Border Silk Saree"
                   fill
                   priority
