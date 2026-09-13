@@ -104,7 +104,7 @@ export default async function HomePage() {
       <ShoppingProcess />
 
       {/* 6. Saree & Fabric Guide Section */}
-      <WorkTypeGuide />
+      <WorkTypeGuide categories={categories}/>
 
       {/* 7. Instagram Showcase */}
       <InstagramShowcase />

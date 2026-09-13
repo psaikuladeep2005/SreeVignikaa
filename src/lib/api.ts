@@ -85,11 +85,11 @@ export async function getCategories(includeInactive: boolean = false): Promise<C
         query = query.eq("is_active", true);
       }
       const { data, error } = await query;
-      if (!error && data && data.length > 0) {
-        return data as Category[];
-      }
+      if (error) throw error;
+      return (data || []) as Category[];
     } catch (error) {
-      console.warn("Supabase fetch categories failed, falling back to local demo store:", error);
+      console.error("Supabase fetch categories failed:", error);
+      throw error;
     }
   }
 
@@ -101,53 +101,84 @@ export async function getCategories(includeInactive: boolean = false): Promise<C
 }
 
 export async function saveCategory(categoryData: Partial<Category>): Promise<Category> {
-  const isNew = !categoryData.id;
-  const newCat: Category = {
-    id: categoryData.id || `c-${Date.now()}`,
+  const isNew = !isValidUUID(categoryData.id);
+  const now = new Date().toISOString();
+  const categoryId = isNew ? generateUUID() : categoryData.id!;
+
+  const categoryRecord = {
+    ...(isNew ? { id: categoryId } : {}),
     name: categoryData.name || "Unnamed Category",
     slug: categoryData.slug || `cat-${Date.now()}`,
     description: categoryData.description || "",
-    image_url: categoryData.image_url || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800",
+    image_url:
+      categoryData.image_url ||
+      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800",
     sort_order: categoryData.sort_order ?? 99,
     is_active: categoryData.is_active ?? true,
-    created_at: categoryData.created_at || new Date().toISOString(),
+    created_at: categoryData.created_at || now,
   };
 
   if (isSupabaseConfigured() && supabase) {
     try {
       if (isNew) {
-        await supabase.from("categories").insert([newCat]);
-      } else {
-        await supabase.from("categories").update(categoryData).eq("id", categoryData.id);
+        const { data, error } = await supabase
+          .from("categories")
+          .insert([categoryRecord])
+          .select("*")
+          .single();
+        if (error) throw error;
+        if (!data?.id) throw new Error("Supabase created the category but returned no category ID.");
+        return data as Category;
       }
+
+      const { data, error } = await supabase
+        .from("categories")
+        .update(categoryRecord)
+        .eq("id", categoryId)
+        .select("*")
+        .single();
+      if (error) throw error;
+      if (!data?.id) throw new Error("Supabase updated the category but returned no category ID.");
+      return data as Category;
     } catch (error) {
-      console.warn("Supabase save category failed, falling back to local:", error);
+      console.error("Supabase save category failed:", error);
+      throw error;
     }
   }
 
-  const categories = getLocalStore<Category[]>(STORAGE_KEYS.CATEGORIES, initialCategories);
-  let updated: Category[];
-  if (isNew) {
-    updated = [...categories, newCat];
-  } else {
-    updated = categories.map((c) => (c.id === newCat.id ? { ...c, ...newCat } : c));
-  }
+  const localCategories = getLocalStore<Category[]>(STORAGE_KEYS.CATEGORIES, initialCategories);
+  const newCat: Category = {
+    id: categoryId,
+    name: categoryRecord.name,
+    slug: categoryRecord.slug,
+    description: categoryRecord.description,
+    image_url: categoryRecord.image_url,
+    sort_order: categoryRecord.sort_order,
+    is_active: categoryRecord.is_active,
+    created_at: categoryRecord.created_at,
+  };
+  const updated = isNew
+    ? [...localCategories, newCat]
+    : localCategories.map((c) => (c.id === categoryId ? { ...c, ...newCat } : c));
   setLocalStore(STORAGE_KEYS.CATEGORIES, updated);
   return newCat;
 }
 
 export async function deleteCategory(id: string): Promise<boolean> {
   if (isSupabaseConfigured() && supabase) {
+    if (!isValidUUID(id)) throw new Error(`Invalid category ID: ${id}`);
     try {
-      await supabase.from("categories").delete().eq("id", id);
-    } catch (e) {
-      console.warn("Supabase delete category failed, falling back to local:", e);
+      const { error } = await supabase.from("categories").delete().eq("id", id);
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error("Supabase delete category failed:", error);
+      throw error;
     }
   }
 
   const categories = getLocalStore<Category[]>(STORAGE_KEYS.CATEGORIES, initialCategories);
-  const filtered = categories.filter((c) => c.id !== id);
-  setLocalStore(STORAGE_KEYS.CATEGORIES, filtered);
+  setLocalStore(STORAGE_KEYS.CATEGORIES, categories.filter((c) => c.id !== id));
   return true;
 }
 
@@ -168,21 +199,29 @@ export async function getProducts(filters?: FilterState): Promise<ProductWithIma
         `)
         .order("created_at", { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        products = (data as any[]).map((p) => ({
-          ...p,
-          images: Array.isArray(p.images)
-            ? p.images.sort((a: ProductImage, b: ProductImage) => a.sort_order - b.sort_order)
-            : [],
-        }));
-      }
-    } catch (err) {
-      console.warn("Supabase products query failed, using local demo store:", err);
-    }
-  }
+      if (error) throw error;
 
-  if (products.length === 0) {
-    products = getLocalStore<ProductWithImages[]>(STORAGE_KEYS.PRODUCTS, initialProducts);
+      // An empty Supabase result is valid. Never replace it with demo products.
+      products = (data || []).map((p) => ({
+        ...p,
+        images: Array.isArray(p.images)
+          ? p.images.sort(
+              (a: ProductImage, b: ProductImage) =>
+                a.sort_order - b.sort_order
+            )
+          : [],
+      }));
+    } catch (error) {
+      console.error("Supabase products query failed:", error);
+      throw error;
+    }
+  } else {
+    // Local/demo mode is used only when Supabase is not configured.
+    products = getLocalStore<ProductWithImages[]>(
+      STORAGE_KEYS.PRODUCTS,
+      initialProducts
+    );
+
     const categories = await getCategories(true);
     products = products.map((p) => ({
       ...p,
@@ -190,14 +229,16 @@ export async function getProducts(filters?: FilterState): Promise<ProductWithIma
     }));
   }
 
-  // Apply filters in code to support full search & filter behavior
   if (filters) {
     if (filters.onlyAvailable) {
       products = products.filter((p) => p.is_available);
     }
     if (filters.categorySlug && filters.categorySlug !== "all") {
       products = products.filter(
-        (p) => p.category?.slug === filters.categorySlug || p.category_id === filters.categorySlug
+        (p) =>
+          p.category?.slug === filters.categorySlug ||
+          p.category_id === filters.categorySlug ||
+          p.category?.id === filters.categorySlug
       );
     }
     if (filters.workType && filters.workType !== "all") {
@@ -230,21 +271,32 @@ export async function getProducts(filters?: FilterState): Promise<ProductWithIma
     if (filters.sortBy) {
       switch (filters.sortBy) {
         case "featured":
-          products = [...products].sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
+          products = [...products].sort(
+            (a, b) =>
+              (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0)
+          );
           break;
         case "newest":
           products = [...products].sort(
-            (a, b) => new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime()
+            (a, b) =>
+              new Date(b.created_at || "").getTime() -
+              new Date(a.created_at || "").getTime()
           );
           break;
         case "price-asc":
-          products = [...products].sort((a, b) => (a.price || 0) - (b.price || 0));
+          products = [...products].sort(
+            (a, b) => (a.price || 0) - (b.price || 0)
+          );
           break;
         case "price-desc":
-          products = [...products].sort((a, b) => (b.price || 0) - (a.price || 0));
+          products = [...products].sort(
+            (a, b) => (b.price || 0) - (a.price || 0)
+          );
           break;
         case "name-asc":
-          products = [...products].sort((a, b) => a.name.localeCompare(b.name));
+          products = [...products].sort((a, b) =>
+            a.name.localeCompare(b.name)
+          );
           break;
       }
     }
@@ -268,18 +320,25 @@ export async function saveProduct(
   imagesData: Partial<ProductImage>[] = []
 ): Promise<ProductWithImages> {
   const isNew = !productData.id;
-  const id = isValidUUID(productData.id) ? productData.id : generateUUID();
+  const existingId = isValidUUID(productData.id) ? productData.id : null;
+  const localId = existingId || generateUUID();
   const now = new Date().toISOString();
 
   const newProduct: ProductWithImages = {
-    id,
-    product_code: productData.product_code || `BL-${Date.now().toString().slice(-4)}`,
+    id: localId,
+    product_code:
+      productData.product_code || `BL-${Date.now().toString().slice(-4)}`,
     name: productData.name || "Ethnic Wear Product",
     slug: productData.slug || `creation-${Date.now()}`,
-    description: productData.description || "Handcrafted with precision and exquisite South Indian artistry.",
-    price: productData.price === undefined ? null : Number(productData.price),
+    description:
+      productData.description ||
+      "Handcrafted with precision and exquisite South Indian artistry.",
+    price:
+      productData.price === undefined ? null : Number(productData.price),
     is_price_visible: productData.is_price_visible ?? true,
-    category_id: productData.category_id || "c1111111-1111-1111-1111-111111111101",
+    category_id:
+      productData.category_id ||
+      "c1111111-1111-1111-1111-111111111101",
     fabric: productData.fabric || "Pure Kanchipuram Silk",
     work_type: productData.work_type || "Zari Work",
     color: productData.color || "Royal Navy & Gold",
@@ -290,8 +349,10 @@ export async function saveProduct(
     updated_at: now,
     images: imagesData.map((img, idx) => ({
       id: isValidUUID(img.id) ? img.id : generateUUID(),
-      product_id: id,
-      image_url: img.image_url || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=1000",
+      product_id: localId,
+      image_url:
+        img.image_url ||
+        "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=1000",
       is_primary: idx === 0 ? true : Boolean(img.is_primary),
       sort_order: idx + 1,
     })),
@@ -300,7 +361,7 @@ export async function saveProduct(
   if (isSupabaseConfigured() && supabase) {
     try {
       const pRecord = {
-        ...(newProduct.id ? { id: newProduct.id } : {}),
+        ...(existingId ? { id: existingId } : {}),
         product_code: newProduct.product_code,
         name: newProduct.name,
         slug: newProduct.slug,
@@ -318,32 +379,40 @@ export async function saveProduct(
       };
 
       if (isNew) {
-        const { data: insertedProduct, error: productInsertError } = await supabase
-          .from("products")
-          .insert([pRecord])
-          .select("*")
-          .single();
+        const { data: insertedProduct, error: productInsertError } =
+          await supabase
+            .from("products")
+            .insert([pRecord])
+            .select("*")
+            .single();
 
         if (productInsertError) throw productInsertError;
-
-        // The database owns the UUID for a newly-created product.
+        if (!insertedProduct?.id) {
+          throw new Error(
+            "Supabase created the product but returned no product ID."
+          );
+        }
         newProduct.id = insertedProduct.id;
-        newProduct.images = newProduct.images.map((img) => ({
-          ...img,
-          product_id: insertedProduct.id,
-        }));
       } else {
-        const { error: productUpdateError } = await supabase
-          .from("products")
-          .update(pRecord)
-          .eq("id", id);
+        const { data: updatedProduct, error: productUpdateError } =
+          await supabase
+            .from("products")
+            .update(pRecord)
+            .eq("id", existingId)
+            .select("*")
+            .single();
 
         if (productUpdateError) throw productUpdateError;
+        if (!updatedProduct?.id) {
+          throw new Error(
+            "Supabase updated the product but returned no product ID."
+          );
+        }
+        newProduct.id = updatedProduct.id;
       }
 
       const productId = newProduct.id;
 
-      // Replace the product's image gallery.
       const { error: imageDeleteError } = await supabase
         .from("product_images")
         .delete()
@@ -351,12 +420,8 @@ export async function saveProduct(
 
       if (imageDeleteError) throw imageDeleteError;
 
-      // IMPORTANT:
-      // New images intentionally omit `id`; product_images.id has a DB UUID default.
-      // Existing UUIDs are preserved when editing.
       const toInsert = newProduct.images.map((img) => ({
-        // Existing images already have valid UUIDs; new images need a real UUID.
-        id: isValidUUID(img.id) ? img.id : generateUUID(),
+        id: generateUUID(),
         product_id: productId,
         image_url: img.image_url,
         is_primary: img.is_primary,
@@ -371,8 +436,6 @@ export async function saveProduct(
         if (imageInsertError) throw imageInsertError;
       }
 
-      // Re-fetch the product images so the returned object contains
-      // the UUIDs generated by PostgreSQL for newly-added images.
       const { data: savedImages, error: savedImagesError } = await supabase
         .from("product_images")
         .select("*")
@@ -382,18 +445,28 @@ export async function saveProduct(
       if (savedImagesError) throw savedImagesError;
 
       newProduct.images = (savedImages || []) as ProductImage[];
+
+      // Supabase is the source of truth when configured.
+      // Do not mirror product data into localStorage.
+      return newProduct;
     } catch (error) {
-      console.warn("Supabase save product error, using local demo store:", error);
+      console.error("Supabase save product failed:", error);
+      throw error;
     }
   }
 
-  const existingProducts = getLocalStore<ProductWithImages[]>(STORAGE_KEYS.PRODUCTS, initialProducts);
-  let updatedList: ProductWithImages[];
-  if (isNew) {
-    updatedList = [newProduct, ...existingProducts];
-  } else {
-    updatedList = existingProducts.map((p) => (p.id === id ? { ...p, ...newProduct } : p));
-  }
+  // Local/demo mode only.
+  const existingProducts = getLocalStore<ProductWithImages[]>(
+    STORAGE_KEYS.PRODUCTS,
+    initialProducts
+  );
+
+  const updatedList = isNew
+    ? [newProduct, ...existingProducts]
+    : existingProducts.map((p) =>
+        p.id === localId ? { ...p, ...newProduct } : p
+      );
+
   setLocalStore(STORAGE_KEYS.PRODUCTS, updatedList);
   return newProduct;
 }
@@ -401,16 +474,30 @@ export async function saveProduct(
 export async function deleteProduct(id: string): Promise<boolean> {
   if (isSupabaseConfigured() && supabase) {
     try {
-      const { error } = await supabase.from("products").delete().eq("id", id);
-      if (error) {
-        console.warn("Supabase delete error:", error);
+      if (!isValidUUID(id)) {
+        throw new Error(`Invalid product ID: ${id}`);
       }
-    } catch (err) {
-      console.warn("Supabase delete product error, falling back to local:", err);
+
+      const { error } = await supabase
+        .from("products")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      // Supabase is the source of truth.
+      return true;
+    } catch (error) {
+      console.error("Supabase delete product failed:", error);
+      throw error;
     }
   }
 
-  const existing = getLocalStore<ProductWithImages[]>(STORAGE_KEYS.PRODUCTS, initialProducts);
+  // Local/demo mode only.
+  const existing = getLocalStore<ProductWithImages[]>(
+    STORAGE_KEYS.PRODUCTS,
+    initialProducts
+  );
   const filtered = existing.filter((p) => p.id !== id);
   setLocalStore(STORAGE_KEYS.PRODUCTS, filtered);
   return true;
