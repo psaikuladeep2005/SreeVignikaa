@@ -60,6 +60,7 @@ export function ProductCard({
             TOP BADGES
         ============================================================ */}
         <div className="pointer-events-none absolute left-3 right-3 top-3 z-10 flex items-center justify-between">
+          {/*
           <div className="flex flex-col items-start gap-1">
             {product.is_featured && (
               <Badge variant="featured" className="shadow-sm">
@@ -72,7 +73,7 @@ export function ProductCard({
               {product.work_type.split("&")[0].trim()}
             </Badge>
           </div>
-
+		*/}
           {/* Share Button */}
           <div className="pointer-events-auto flex items-center gap-1.5">
             <button
