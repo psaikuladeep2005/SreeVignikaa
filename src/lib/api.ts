@@ -353,7 +353,7 @@ export async function saveProduct(
       image_url:
         img.image_url ||
         "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=1000",
-      is_primary: idx === 0 ? true : Boolean(img.is_primary),
+      is_primary: Boolean(img.is_primary),
       sort_order: idx + 1,
     })),
   };
