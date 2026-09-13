@@ -27,14 +27,40 @@ export function HeroBanner() {
     : "https://wa.me/919876543210";
 
   return (
+  
     <section className="relative overflow-hidden bg-gradient-to-b from-champagne-100 via-champagne-50 to-champagne-100/50 pt-10 pb-20 sm:pt-16 sm:pb-28 border-b border-gold-300/30">
+    
+
       {/* Subtle luxury background ornament */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-radial-gradient from-gold-400/10 via-transparent to-transparent pointer-events-none rounded-full blur-3xl" />
+
+
+
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Headline & Value Props */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+          {/* First Order Offer - Premium Glass Marquee */}
+<div className="relative mx-auto w-full max-w-2xl overflow-hidden rounded-full border border-gold-500/40 bg-champagne-200/60 shadow-lg backdrop-blur-xl lg:mx-0">
+  <div className="flex w-max animate-marquee whitespace-nowrap">
+    <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
+      ✨ Get ₹150 on your first order
+    </span>
+
+    <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
+      ✨ Get ₹150 on your first order
+    </span>
+
+    <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
+      ✨ Get ₹150 on your first order
+    </span>
+
+    <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
+      ✨ Get ₹150 on your first order
+    </span>
+  </div>
+</div>
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
