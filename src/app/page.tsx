@@ -28,7 +28,7 @@ export default async function HomePage() {
 
       {/* 2. Quick Category Navigation Bar */}
       <section className="bg-champagne-200/50 border-b border-gold-300/30 py-6 px-4">
-        <div className="mx-auto max-w-7xl flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
+        <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/catalog"
             className="shrink-0 inline-flex items-center gap-2 rounded-full bg-maroon-900 px-5 py-2.5 text-xs font-bold text-gold-100 shadow-md hover:bg-maroon-800 transition-all"

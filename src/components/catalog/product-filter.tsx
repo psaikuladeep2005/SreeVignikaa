@@ -61,7 +61,7 @@ export function ProductFilter({
   return (
     <div className="space-y-6">
       {/* Category Pills Navigation */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+      <div className="flex flex-wrap items-center justify-center gap-3 pb-2">
         <button
           onClick={() =>
             onFilterChange({ ...filters, categorySlug: "all" })
