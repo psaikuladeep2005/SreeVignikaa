@@ -53,7 +53,6 @@ export function ProductCard({
       setCopied(false);
     }, 2000);
   };
-
   return (
     <>
       <div className="group relative flex flex-col overflow-hidden rounded-xl border border-gold-300/30 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-gold-400/60 hover:shadow-xl">

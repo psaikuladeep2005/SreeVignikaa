@@ -151,8 +151,8 @@ export function ProductModal({ product, open, onOpenChange }: ProductModalProps)
                   </span>
                 )}
               </div>
-
-              <p className="text-sm text-maroon-900/85 leading-relaxed">
+		
+              <p className="text-sm text-maroon-900/85 leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
 
