@@ -45,19 +45,19 @@ export function HeroBanner() {
 <div className="relative mx-auto w-full max-w-2xl overflow-hidden rounded-full border border-gold-500/40 bg-champagne-200/60 shadow-lg backdrop-blur-xl lg:mx-0">
   <div className="flex w-max animate-marquee whitespace-nowrap">
     <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
-      ✨ Get ₹150 on your first order
+      ✨ Get ₹150 offer on your first order
     </span>
 
     <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
-      ✨ Get ₹150 on your first order
+      ✨ Get ₹150 offer on your first order
     </span>
 
     <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
-      ✨ Get ₹150 on your first order
+      ✨ Get ₹150 offer on your first order
     </span>
 
     <span className="px-10 py-2.5 text-sm font-semibold tracking-wide text-maroon-950 sm:text-base">
-      ✨ Get ₹150 on your first order
+      ✨ Get ₹150 offer on your first order
     </span>
   </div>
 </div>
@@ -85,7 +85,7 @@ export function HeroBanner() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-base sm:text-lg text-maroon-900/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal"
+              className="text-base sm:text-lg text-maroon-900/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal text-balance max-w-md sm:max-w-2xl"
             >
               {settings?.hero_subtitle ||
                 "Discover handpicked Kanchipuram & Banarasi silk sarees, ready-to-wear designer dresses, festive lehengas, and everyday ethnic wear — curated for every occasion."}

@@ -169,7 +169,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               )}
             </div>
 
-            <p className="text-sm sm:text-base text-maroon-900/85 leading-relaxed">
+            <p className="text-sm sm:text-base text-maroon-900/85 leading-relaxed whitespace-pre-line">
               {product.description}
             </p>
 
