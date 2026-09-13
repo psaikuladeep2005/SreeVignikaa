@@ -72,12 +72,12 @@ export function Navbar() {
               <div className="flex items-center gap-3">
                 <img
                   src={settings.logo_url}
-                  alt={settings.boutique_name || "SREEVIGNIKAA Sarees"}
+                  alt={settings.boutique_name || "SREEVIGNIKAA"}
                   className="max-h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="flex flex-col">
                   <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-300">
-                    {settings?.boutique_name || "SREEVIGNIKAA Sarees"}
+                    {settings?.boutique_name || "SREEVIGNIKAA"}
                   </span>
                   <span className="text-[10px] sm:text-xs font-sans uppercase tracking-widest text-blue-600 font-semibold">
                     Sarees, Dresses &amp; Ethnic Wear
@@ -91,7 +91,7 @@ export function Navbar() {
                 </div>
                 <div className="flex flex-col">
                   <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors duration-300">
-                    {settings?.boutique_name || "SREEVIGNIKAA Sarees"}
+                    {settings?.boutique_name || "SREEVIGNIKAA"}
                   </span>
                   <span className="text-[10px] sm:text-xs font-sans uppercase tracking-widest text-blue-600 font-semibold">
                     Sarees, Dresses &amp; Ethnic Wear
