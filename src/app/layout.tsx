@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     siteName: "SREEVIGNIKAA Sarees",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=1200",
+        url: "https://sree-vignikaa.vercel.app/images/brand.png",
         width: 1200,
         height: 630,
         alt: "SREEVIGNIKAA Sarees & Ethnic Wear",
