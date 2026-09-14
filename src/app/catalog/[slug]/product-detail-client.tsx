@@ -154,7 +154,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </h1>
 
             <div className="flex items-baseline gap-4 pt-1">
-              <span className="font-serif text-3xl font-bold text-maroon-900">
+              <span className="text-3xl font-semibold tracking-tight text-maroon-900">
                 {formatINR(product.price, product.is_price_visible)}
               </span>
               {product.is_available ? (

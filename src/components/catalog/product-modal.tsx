@@ -137,7 +137,7 @@ export function ProductModal({ product, open, onOpenChange }: ProductModalProps)
               </DialogTitle>
 
               <div className="flex items-baseline gap-3">
-                <span className="font-serif text-2xl font-bold text-maroon-900">
+                <span className="text-2xl font-semibold tracking-tight text-maroon-900">
                   {formatINR(product.price, product.is_price_visible)}
                 </span>
                 {product.is_available ? (

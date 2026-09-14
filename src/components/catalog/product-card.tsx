@@ -176,7 +176,7 @@ export function ProductCard({
                   Price
                 </span>
 
-                <span className="font-serif text-lg font-bold text-maroon-950">
+                <span className="text-lg font-semibold tracking-tight text-maroon-950">
                   {formatINR(
                     product.price,
                     product.is_price_visible
