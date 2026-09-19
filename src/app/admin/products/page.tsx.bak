@@ -282,8 +282,7 @@ export default function AdminProductsPage() {
                           alt={p.name}
                           fill
                           className="object-cover object-top"
-                          unoptimized
-/>
+                        />
                       </div>
                     </td>
                     <td className="p-4 font-mono font-bold text-gold-700">
@@ -559,8 +558,7 @@ export default function AdminProductsPage() {
                         alt={`Image ${idx + 1}`}
                         fill
                         className="object-cover object-top"
-                        unoptimized
-/>
+                      />
                       {img.is_primary && (
                         <span className="absolute bottom-0 inset-x-0 bg-maroon-900 text-gold-100 text-[10px] font-bold text-center py-0.5">
                           Primary

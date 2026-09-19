@@ -1,0 +1,52 @@
+src/app/about/page.tsx:3:import Image from "next/image";
+src/app/about/page.tsx:35:              <Image
+src/app/catalog/[slug]/page.tsx:27:      ? product.images.find((i) => i.is_primary)?.image_url || product.images[0].image_url
+src/app/catalog/[slug]/product-detail-client.tsx:4:import Image from "next/image";
+src/app/catalog/[slug]/product-detail-client.tsx:35:            image_url:
+src/app/catalog/[slug]/product-detail-client.tsx:42:  const [activeImg, setActiveImg] = useState(sortedImages[0].image_url);
+src/app/catalog/[slug]/product-detail-client.tsx:88:            <Image
+src/app/catalog/[slug]/product-detail-client.tsx:113:                  onClick={() => setActiveImg(img.image_url)}
+src/app/catalog/[slug]/product-detail-client.tsx:115:                    activeImg === img.image_url
+src/app/catalog/[slug]/product-detail-client.tsx:120:                  <Image
+src/app/catalog/[slug]/product-detail-client.tsx:121:                    src={img.image_url}
+src/app/admin/categories/page.tsx:4:import Image from "next/image";
+src/app/admin/categories/page.tsx:55:      image_url:
+src/app/admin/categories/page.tsx:73:      setEditingCat({ ...editingCat, image_url: url });
+src/app/admin/categories/page.tsx:131:              <Image
+src/app/admin/categories/page.tsx:132:                src={c.image_url || ""}
+src/app/admin/categories/page.tsx:251:                    value={editingCat.image_url || ""}
+src/app/admin/categories/page.tsx:253:                      setEditingCat({ ...editingCat, image_url: e.target.value })
+src/app/admin/products/page.tsx:4:import Image from "next/image";
+src/app/admin/products/page.tsx:89:        image_url:
+src/app/admin/products/page.tsx:105:              image_url:
+src/app/admin/products/page.tsx:122:        image_url: url,
+src/app/admin/products/page.tsx:137:      image_url: newImageUrl.trim(),
+src/app/admin/products/page.tsx:272:                  p.images?.find((i) => i.is_primary)?.image_url ||
+src/app/admin/products/page.tsx:273:                  p.images?.[0]?.image_url ||
+src/app/admin/products/page.tsx:280:                        <Image
+src/app/admin/products/page.tsx:556:                      <Image
+src/app/admin/products/page.tsx:557:                        src={img.image_url || ""}
+src/app/admin/settings/page.tsx:4:import Image from "next/image";
+src/app/admin/settings/page.tsx:99:              <ImageIcon className="h-5 w-5 text-blue-600" />
+src/app/admin/settings/page.tsx:118:                  <Image
+src/components/home/specialties-section.tsx:4:import Image from "next/image";
+src/components/home/specialties-section.tsx:95:      image: category.image_url || fallbackImage,
+src/components/home/specialties-section.tsx:145:                    <Image
+src/components/home/hero-banner.tsx:4:import Image from "next/image";
+src/components/home/hero-banner.tsx:163:                <Image
+src/components/home/work-type-guide.tsx:4:import Image from "next/image";
+src/components/home/work-type-guide.tsx:54:                <Image
+src/components/home/work-type-guide.tsx:56:                    category.image_url ||
+src/components/catalog/product-card.tsx:4:import Image from "next/image";
+src/components/catalog/product-card.tsx:39:      ? product.images.find((image) => image.is_primary)?.image_url ||
+src/components/catalog/product-card.tsx:40:        product.images[0].image_url
+src/components/catalog/product-card.tsx:110:          <Image
+src/components/catalog/product-modal.tsx:4:import Image from "next/image";
+src/components/catalog/product-modal.tsx:42:            image_url:
+src/components/catalog/product-modal.tsx:49:  const [activeImage, setActiveImage] = useState(sortedImages[0].image_url);
+src/components/catalog/product-modal.tsx:66:              <Image
+src/components/catalog/product-modal.tsx:67:                src={activeImage}
+src/components/catalog/product-modal.tsx:89:                    onClick={() => setActiveImage(img.image_url)}
+src/components/catalog/product-modal.tsx:91:                      activeImage === img.image_url
+src/components/catalog/product-modal.tsx:96:                    <Image
+src/components/catalog/product-modal.tsx:97:                      src={img.image_url}

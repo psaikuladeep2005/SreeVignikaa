@@ -92,8 +92,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               priority
               sizes="(max-width: 1024px) 100vw, 60vw"
               className="object-cover object-top transition-all duration-300"
-              unoptimized
-/>
+            />
 
             {product.is_featured && (
               <div className="absolute top-4 left-4 z-10">
@@ -123,8 +122,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                     alt={`${product.name} thumbnail ${idx + 1}`}
                     fill
                     className="object-cover object-top"
-                    unoptimized
-/>
+                  />
                 </button>
               ))}
             </div>
