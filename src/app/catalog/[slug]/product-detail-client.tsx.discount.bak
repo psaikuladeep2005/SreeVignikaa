@@ -18,7 +18,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProductWithImages } from "@/lib/types";
 import { formatINR } from "@/lib/utils";
-import { FirstOrderDiscount } from "@/components/catalog/first-order-discount";
 import { WhatsAppButton } from "@/components/whatsapp/whatsapp-button";
 
 interface ProductDetailClientProps {
@@ -172,11 +171,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               )}
             </div>
 
-                        <div className="mt-2">
-              <FirstOrderDiscount />
-            </div>
-
-<p className="text-sm sm:text-base text-maroon-900/85 leading-relaxed whitespace-pre-line">
+            <p className="text-sm sm:text-base text-maroon-900/85 leading-relaxed whitespace-pre-line">
               {product.description}
             </p>
 

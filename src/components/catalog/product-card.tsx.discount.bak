@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { FirstOrderDiscount } from "@/components/catalog/first-order-discount";
 import Link from "next/link";
 import { Sparkles, Eye, Share2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -184,7 +183,6 @@ export function ProductCard({
                     product.is_price_visible
                   )}
                 </span>
-                <FirstOrderDiscount />
               </div>
 
               <Link

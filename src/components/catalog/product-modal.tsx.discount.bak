@@ -23,7 +23,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProductWithImages } from "@/lib/types";
 import { formatINR } from "@/lib/utils";
-import { FirstOrderDiscount } from "@/components/catalog/first-order-discount";
 import { WhatsAppButton } from "@/components/whatsapp/whatsapp-button";
 
 interface ProductModalProps {
@@ -155,11 +154,7 @@ export function ProductModal({ product, open, onOpenChange }: ProductModalProps)
                 )}
               </div>
 		
-                            <div className="mt-2">
-                <FirstOrderDiscount />
-              </div>
-
-<p className="text-sm text-maroon-900/85 leading-relaxed whitespace-pre-line">
+              <p className="text-sm text-maroon-900/85 leading-relaxed whitespace-pre-line">
                 {product.description}
               </p>
 
